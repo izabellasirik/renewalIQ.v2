@@ -15,6 +15,7 @@ export type FollowUpPrefill = {
   contactId?: string;
   driverId?: string;
   vehicleId?: string;
+  marketSubmissionId?: string;
 };
 
 export function ScheduleFollowUpButton({
@@ -55,6 +56,9 @@ export function ScheduleFollowUpButton({
           )}
           {prefill?.driverId && <input type="hidden" name="driverId" value={prefill.driverId} />}
           {prefill?.vehicleId && <input type="hidden" name="vehicleId" value={prefill.vehicleId} />}
+          {prefill?.marketSubmissionId && (
+            <input type="hidden" name="marketSubmissionId" value={prefill.marketSubmissionId} />
+          )}
 
           <div>
             <label className="field-label">Follow-Up For</label>

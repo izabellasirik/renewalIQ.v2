@@ -31,6 +31,7 @@ export async function scheduleFollowUp(formData: FormData) {
   const contactId = str(formData, "contactId");
   const driverId = str(formData, "driverId");
   const vehicleId = str(formData, "vehicleId");
+  const marketSubmissionId = str(formData, "marketSubmissionId");
   const note = str(formData, "note");
 
   await prisma.followUp.create({
@@ -44,6 +45,7 @@ export async function scheduleFollowUp(formData: FormData) {
       contactId,
       driverId,
       vehicleId,
+      marketSubmissionId,
     },
   });
 
@@ -62,11 +64,19 @@ export async function scheduleFollowUp(formData: FormData) {
     }
   }
 
+  let description = `Follow-up scheduled — ${forLabel} — ${formatShortDate(dueDate)}`;
+  if (marketSubmissionId) {
+    const market = await prisma.marketSubmission.findUnique({ where: { id: marketSubmissionId } });
+    if (market) {
+      description = `Follow-up scheduled with ${market.carrierName} for ${formatShortDate(dueDate)}.`;
+    }
+  }
+
   await logActivity(prisma, {
     clientId,
     contactId,
     type: "Follow-Up",
-    description: `Follow-up scheduled — ${forLabel} — ${formatShortDate(dueDate)}`,
+    description,
     note,
   });
 

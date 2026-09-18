@@ -14,6 +14,9 @@ export const ACTIVITY_TYPES = [
   "Medical Cert Uploaded",
   "Vehicle Added",
   "Registration Uploaded",
+  "Market Added",
+  "Market Status Changed",
+  "Quote Received",
   "Client Created",
   "Other",
 ] as const;

@@ -16,7 +16,7 @@ export default async function TodayPage() {
     prisma.followUp.findMany({
       where: { completed: false, dueDate: { lte: endToday } },
       orderBy: { dueDate: "asc" },
-      include: { client: true, documentRequirement: true, driver: true, vehicle: true },
+      include: { client: true, documentRequirement: true, driver: true, vehicle: true, marketSubmission: true },
     }),
     prisma.followUp.findMany({
       where: { completed: true, completedAt: { gte: startToday, lte: endToday } },
@@ -27,7 +27,7 @@ export default async function TodayPage() {
       where: { completed: false, dueDate: { gt: endToday } },
       orderBy: { dueDate: "asc" },
       take: 10,
-      include: { client: true, documentRequirement: true, driver: true, vehicle: true },
+      include: { client: true, documentRequirement: true, driver: true, vehicle: true, marketSubmission: true },
     }),
   ]);
 

@@ -31,6 +31,7 @@ model Client {
   followUps            FollowUp[]
   drivers              Driver[]
   vehicles             Vehicle[]
+  marketSubmissions    MarketSubmission[]
 }
 
 model Contact {
@@ -79,6 +80,8 @@ model File {
   medicalCert           MedicalCert?         @relation(fields: [medicalCertId], references: [id], onDelete: SetNull)
   vehicleId             String?
   vehicle               Vehicle?             @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  marketSubmissionId    String?
+  marketSubmission      MarketSubmission?    @relation(fields: [marketSubmissionId], references: [id], onDelete: SetNull)
   purpose               String?
   filename              String
   path                  String
@@ -107,7 +110,7 @@ model Note {
   updatedAt DateTime @updatedAt
 }
 
-// Optionally references Client + one of DocumentRequirement / Contact / Driver / Vehicle
+// Optionally references Client + one of DocumentRequirement / Contact / Driver / Vehicle / MarketSubmission
 model FollowUp {
   id                    String               @id @default(cuid())
   clientId              String
@@ -120,6 +123,8 @@ model FollowUp {
   driver                Driver?              @relation(fields: [driverId], references: [id], onDelete: SetNull)
   vehicleId             String?
   vehicle               Vehicle?             @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  marketSubmissionId    String?
+  marketSubmission      MarketSubmission?    @relation(fields: [marketSubmissionId], references: [id], onDelete: SetNull)
   forLabel              String
   action                String
   dueDate               DateTime
@@ -208,6 +213,35 @@ model Vehicle {
   registrationReceived   Boolean   @default(false)
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
+
+  files     File[]
+  followUps FollowUp[]
+}
+
+// ---------------------------------------------------------------------------
+// Carrier / Quote Tracking
+// ---------------------------------------------------------------------------
+
+// Status: "Not Contacted" | "Submitted" | "Waiting" | "More Info Needed" |
+// "Quote Received" | "Declined" | "Bound". Workflow status only — never an
+// underwriting or carrier-eligibility decision.
+model MarketSubmission {
+  id             String    @id @default(cuid())
+  clientId       String
+  client         Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  carrierName    String
+  contactName    String?
+  contactEmail   String?
+  contactPhone   String?
+  submittedDate  DateTime?
+  status         String    @default("Not Contacted")
+  notes          String?
+  requestedInfo  String?
+  premium        Float?
+  effectiveDate  DateTime?
+  expirationDate DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   files     File[]
   followUps FollowUp[]

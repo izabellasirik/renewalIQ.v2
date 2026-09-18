@@ -12,6 +12,17 @@ export type DocumentStatus = (typeof DOCUMENT_STATUSES)[number];
 export const VIOLATION_SEVERITIES = ["Minor", "Moderate", "Severe"] as const;
 export type ViolationSeverity = (typeof VIOLATION_SEVERITIES)[number];
 
+export const MARKET_STATUSES = [
+  "Not Contacted",
+  "Submitted",
+  "Waiting",
+  "More Info Needed",
+  "Quote Received",
+  "Declined",
+  "Bound",
+] as const;
+export type MarketStatus = (typeof MARKET_STATUSES)[number];
+
 export const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
   "KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",

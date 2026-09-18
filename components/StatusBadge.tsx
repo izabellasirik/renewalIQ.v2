@@ -23,3 +23,9 @@ export function clientStatusTone(status: string): Tone {
   if (status === "Closed") return "neutral";
   return "neutral";
 }
+
+export function marketStatusTone(status: string): Tone {
+  if (status === "Quote Received" || status === "Bound") return "good";
+  if (status === "Waiting" || status === "More Info Needed") return "warn";
+  return "neutral";
+}

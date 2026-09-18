@@ -5,6 +5,7 @@ import { StatusBadge, clientStatusTone } from "@/components/StatusBadge";
 import { OverviewTab } from "./OverviewTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { DriversVehiclesTab } from "./DriversVehiclesTab";
+import { MarketsTab } from "./MarketsTab";
 import { ActivityTab } from "./ActivityTab";
 import { NotesTab } from "./NotesTab";
 
@@ -14,6 +15,7 @@ const TABS = [
   { key: "overview", label: "Overview" },
   { key: "documents", label: "Documents" },
   { key: "drivers", label: "Drivers & Vehicles" },
+  { key: "markets", label: "Markets" },
   { key: "activity", label: "Activity Log" },
   { key: "notes", label: "Notes" },
 ] as const;
@@ -70,6 +72,7 @@ export default async function ClientProfilePage({
       {tab === "overview" && <OverviewTab clientId={id} />}
       {tab === "documents" && <DocumentsTab clientId={id} />}
       {tab === "drivers" && <DriversVehiclesTab clientId={id} />}
+      {tab === "markets" && <MarketsTab clientId={id} />}
       {tab === "activity" && <ActivityTab clientId={id} />}
       {tab === "notes" && <NotesTab clientId={id} />}
     </div>

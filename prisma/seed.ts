@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { addDays, subDays } from "date-fns";
+import { addDays, format, subDays } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -10,6 +10,7 @@ const ago = (offset: number) => subDays(today, offset);
 async function main() {
   console.log("Clearing existing data...");
   await prisma.followUp.deleteMany();
+  await prisma.marketSubmission.deleteMany();
   await prisma.violation.deleteMany();
   await prisma.mvr.deleteMany();
   await prisma.medicalCert.deleteMany();
@@ -735,6 +736,193 @@ async function main() {
       registrationExpiration: d(400),
       registrationReceived: true,
     },
+  });
+
+  // ---------------------------------------------------------------------
+  // Markets / carrier quote tracking
+  // ---------------------------------------------------------------------
+
+  // ABC Trucking — full pipeline spread: waiting, more info needed, quote
+  // received, and declined.
+  const abcProgressive = await prisma.marketSubmission.create({
+    data: {
+      clientId: abcTrucking.id,
+      carrierName: "Progressive",
+      contactName: "Sarah Miller",
+      contactEmail: "sarah.miller@progressive.example.com",
+      contactPhone: "(800) 555-0142",
+      submittedDate: ago(3),
+      status: "Waiting",
+      notes: "Waiting for updated MVR before underwriting can continue.",
+      createdAt: ago(6),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Market Added", description: "Progressive added as market.", occurredAt: ago(6) },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Market Status Changed", description: "Submission sent to Progressive.", occurredAt: ago(3) },
+  });
+  await prisma.followUp.create({
+    data: {
+      clientId: abcTrucking.id,
+      marketSubmissionId: abcProgressive.id,
+      forLabel: "Follow up with Progressive",
+      action: "Follow up with Sarah Miller regarding Progressive quote.",
+      dueDate: d(1),
+      createdAt: ago(1),
+    },
+  });
+  await prisma.activity.create({
+    data: {
+      clientId: abcTrucking.id,
+      type: "Follow-Up",
+      description: `Follow-up scheduled with Progressive for ${format(d(1), "MMM d")}.`,
+      occurredAt: ago(1),
+    },
+  });
+
+  await prisma.marketSubmission.create({
+    data: {
+      clientId: abcTrucking.id,
+      carrierName: "Travelers",
+      contactName: "Mark Ito",
+      contactEmail: "mark.ito@travelers.example.com",
+      submittedDate: ago(5),
+      status: "More Info Needed",
+      requestedInfo: "Updated MVR for John Smith\nCurrent vehicle registration",
+      createdAt: ago(8),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Market Added", description: "Travelers added as market.", occurredAt: ago(8) },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Market Status Changed", description: "Travelers requested more information.", occurredAt: ago(2) },
+  });
+
+  await prisma.marketSubmission.create({
+    data: {
+      clientId: abcTrucking.id,
+      carrierName: "IAT",
+      contactName: "Priya Nair",
+      contactEmail: "priya.nair@iat.example.com",
+      submittedDate: ago(12),
+      status: "Quote Received",
+      premium: 42500,
+      effectiveDate: d(30),
+      expirationDate: d(395),
+      notes: "Competitive premium — worth presenting to client alongside Progressive.",
+      createdAt: ago(14),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Market Added", description: "IAT added as market.", occurredAt: ago(14) },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Quote Received", description: "Quote received from IAT.", occurredAt: ago(4) },
+  });
+
+  await prisma.marketSubmission.create({
+    data: {
+      clientId: abcTrucking.id,
+      carrierName: "Liberty Mutual",
+      contactName: "Dan Reyes",
+      submittedDate: ago(15),
+      status: "Declined",
+      notes: "Declined due to loss history.",
+      createdAt: ago(16),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Market Added", description: "Liberty Mutual added as market.", occurredAt: ago(16) },
+  });
+  await prisma.activity.create({
+    data: { clientId: abcTrucking.id, type: "Market Status Changed", description: "Liberty Mutual declined.", occurredAt: ago(15) },
+  });
+
+  // XYZ Logistics — earlier in the pipeline
+  await prisma.marketSubmission.create({
+    data: {
+      clientId: xyz.id,
+      carrierName: "Nationwide",
+      contactName: "Beth Carlson",
+      contactEmail: "beth.carlson@nationwide.example.com",
+      submittedDate: ago(4),
+      status: "Submitted",
+      createdAt: ago(4),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: xyz.id, type: "Market Added", description: "Nationwide added as market.", occurredAt: ago(4) },
+  });
+  await prisma.activity.create({
+    data: { clientId: xyz.id, type: "Market Status Changed", description: "Submission sent to Nationwide.", occurredAt: ago(4) },
+  });
+  await prisma.marketSubmission.create({
+    data: {
+      clientId: xyz.id,
+      carrierName: "Great West Casualty",
+      status: "Not Contacted",
+      createdAt: ago(2),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: xyz.id, type: "Market Added", description: "Great West Casualty added as market.", occurredAt: ago(2) },
+  });
+
+  // Liberty Freight — waiting, follow-up scheduled
+  const libertyCanal = await prisma.marketSubmission.create({
+    data: {
+      clientId: liberty.id,
+      carrierName: "Canal Insurance",
+      contactName: "Tom Reid",
+      contactEmail: "tom.reid@canal.example.com",
+      submittedDate: ago(6),
+      status: "Waiting",
+      createdAt: ago(7),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: liberty.id, type: "Market Added", description: "Canal Insurance added as market.", occurredAt: ago(7) },
+  });
+  await prisma.activity.create({
+    data: { clientId: liberty.id, type: "Market Status Changed", description: "Submission sent to Canal Insurance.", occurredAt: ago(6) },
+  });
+  await prisma.followUp.create({
+    data: {
+      clientId: liberty.id,
+      marketSubmissionId: libertyCanal.id,
+      forLabel: "Follow up with Canal Insurance",
+      action: "Follow up with Tom Reid regarding Canal Insurance quote.",
+      dueDate: d(2),
+      createdAt: ago(1),
+    },
+  });
+
+  // Smith Transport — healthy account, market bound
+  await prisma.marketSubmission.create({
+    data: {
+      clientId: smithTransport.id,
+      carrierName: "Sentry Insurance",
+      contactName: "Alicia Fenn",
+      contactEmail: "alicia.fenn@sentry.example.com",
+      submittedDate: ago(25),
+      status: "Bound",
+      premium: 38000,
+      effectiveDate: d(15),
+      expirationDate: d(380),
+      createdAt: ago(28),
+    },
+  });
+  await prisma.activity.create({
+    data: { clientId: smithTransport.id, type: "Market Added", description: "Sentry Insurance added as market.", occurredAt: ago(28) },
+  });
+  await prisma.activity.create({
+    data: { clientId: smithTransport.id, type: "Quote Received", description: "Quote received from Sentry Insurance.", occurredAt: ago(18) },
+  });
+  await prisma.activity.create({
+    data: { clientId: smithTransport.id, type: "Market Status Changed", description: "Sentry Insurance marked Bound.", occurredAt: ago(10) },
   });
 
   console.log("Seed complete.");

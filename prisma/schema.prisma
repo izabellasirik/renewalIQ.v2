@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Core CRM
+// ---------------------------------------------------------------------------
+
+model Client {
+  id                   String    @id @default(cuid())
+  companyName          String
+  primaryContactName   String?
+  email                String?
+  phone                String?
+  renewalDate          DateTime?
+  policyExpirationDate DateTime?
+  status               String    @default("Active")
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  contacts             Contact[]
+  documentRequirements DocumentRequirement[]
+  files                File[]
+  activities           Activity[]
+  notes                Note[]
+  followUps            FollowUp[]
+  drivers              Driver[]
+  vehicles             Vehicle[]
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name      String
+  role      String?
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+
+  followUps  FollowUp[]
+  activities Activity[]
+}
+
+// Requirement status: "Missing" | "Requested" | "Received"
+model DocumentRequirement {
+  id         String    @id @default(cuid())
+  clientId   String
+  client     Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name       String
+  status     String    @default("Missing")
+  receivedAt DateTime?
+  note       String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  files     File[]
+  followUps FollowUp[]
+}
+
+// Storage-agnostic file record. `provider` + `path` are the seam for swapping
+// local disk storage for Dropbox/S3/etc later without touching the schema.
+model File {
+  id                    String               @id @default(cuid())
+  clientId              String
+  client                Client               @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  documentRequirementId String?
+  documentRequirement   DocumentRequirement? @relation(fields: [documentRequirementId], references: [id], onDelete: SetNull)
+  driverId              String?
+  driver                Driver?              @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  mvrId                 String?
+  mvr                   Mvr?                 @relation(fields: [mvrId], references: [id], onDelete: SetNull)
+  medicalCertId         String?
+  medicalCert           MedicalCert?         @relation(fields: [medicalCertId], references: [id], onDelete: SetNull)
+  vehicleId             String?
+  vehicle               Vehicle?             @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  purpose               String?
+  filename              String
+  path                  String
+  provider              String               @default("local")
+  uploadedAt            DateTime             @default(now())
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  contactId   String?
+  contact     Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  type        String
+  description String
+  note        String?
+  occurredAt  DateTime @default(now())
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Optionally references Client + one of DocumentRequirement / Contact / Driver / Vehicle
+model FollowUp {
+  id                    String               @id @default(cuid())
+  clientId              String
+  client                Client               @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  documentRequirementId String?
+  documentRequirement   DocumentRequirement? @relation(fields: [documentRequirementId], references: [id], onDelete: SetNull)
+  contactId             String?
+  contact               Contact?             @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  driverId              String?
+  driver                Driver?              @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  vehicleId             String?
+  vehicle               Vehicle?             @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  forLabel              String
+  action                String
+  dueDate               DateTime
+  note                  String?
+  completed             Boolean              @default(false)
+  completedAt           DateTime?
+  createdAt             DateTime             @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Drivers & Vehicles (trucking / commercial auto extension)
+// ---------------------------------------------------------------------------
+
+model Driver {
+  id                    String    @id @default(cuid())
+  clientId              String
+  client                Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name                  String
+  licenseNumber         String?
+  licenseState          String?
+  licenseIssueDate      DateTime?
+  licenseExpirationDate DateTime?
+  requiredHistoryYears  Int?
+  previousLicenseNeeded Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  files        File[]
+  mvrs         Mvr[]
+  medicalCerts MedicalCert[]
+  followUps    FollowUp[]
+}
+
+model Mvr {
+  id           String   @id @default(cuid())
+  driverId     String
+  driver       Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  reportDate   DateTime
+  historyYears Float?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  violations Violation[]
+  files      File[]
+}
+
+// Severity: "Minor" | "Moderate" | "Severe"
+model Violation {
+  id          String    @id @default(cuid())
+  mvrId       String
+  mvr         Mvr       @relation(fields: [mvrId], references: [id], onDelete: Cascade)
+  type        String
+  date        DateTime?
+  severity    String
+  description String?
+  createdAt   DateTime  @default(now())
+}
+
+model MedicalCert {
+  id             String    @id @default(cuid())
+  driverId       String
+  driver         Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  issueDate      DateTime?
+  expirationDate DateTime?
+  notes          String?
+  createdAt      DateTime  @default(now())
+
+  files File[]
+}
+
+model Vehicle {
+  id                     String    @id @default(cuid())
+  clientId               String
+  client                 Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  year                   Int?
+  make                   String?
+  model                  String?
+  vin                    String?
+  value                  Float?
+  valueNote              String?
+  valueRecordedAt        DateTime?
+  registrationOwner      String?
+  registrationVin        String?
+  registrationAddress    String?
+  registrationExpiration DateTime?
+  registrationReceived   Boolean   @default(false)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  files     File[]
+  followUps FollowUp[]
+}

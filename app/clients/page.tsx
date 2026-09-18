@@ -46,14 +46,14 @@ export default async function ClientsPage({
   }));
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
+    <div className="mx-auto max-w-6xl px-6 py-10">
       <header className="mb-6 flex items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">Clients</h1>
           <p className="mt-1 text-muted">{clients.length} accounts</p>
         </div>
         <Link href="/clients/new" className="btn btn-primary">
-          Add Client
+          <span aria-hidden>+</span> Add Client
         </Link>
       </header>
 
@@ -66,7 +66,7 @@ export default async function ClientsPage({
           No clients match your search.
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((c) => (
             <ClientCard key={c.id} client={c} />
           ))}

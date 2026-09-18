@@ -1,9 +1,9 @@
 export const CLIENT_STATUSES = [
-  "Active",
+  "Action Required",
   "Waiting on Client",
-  "Renewal Scheduled",
-  "In Review",
-  "Closed",
+  "Waiting for Quote",
+  "On Track",
+  "Completed",
 ] as const;
 
 export const DOCUMENT_STATUSES = ["Missing", "Requested", "Received"] as const;

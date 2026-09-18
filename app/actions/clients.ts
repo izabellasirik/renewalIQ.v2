@@ -25,7 +25,7 @@ export async function createClient(formData: FormData) {
       phone: str(formData, "phone"),
       renewalDate: parseDateInput(str(formData, "renewalDate")),
       policyExpirationDate: parseDateInput(str(formData, "policyExpirationDate")),
-      status: str(formData, "status") ?? "Active",
+      status: str(formData, "status") ?? "On Track",
     },
   });
 

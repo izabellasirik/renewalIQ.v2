@@ -12,7 +12,7 @@ export default function NewClientPage() {
 
       <form action={createClient} className="surface-card mt-6 space-y-5 p-6">
         <div>
-          <label className="field-label">Company Name *</label>
+          <label className="field-label">Company / Client Name *</label>
           <input name="companyName" required className="input mt-1" placeholder="ABC Trucking" />
         </div>
 
@@ -32,20 +32,9 @@ export default function NewClientPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="field-label">Renewal Date</label>
-            <input type="date" name="renewalDate" className="input mt-1" />
-          </div>
-          <div>
-            <label className="field-label">Policy Expiration Date</label>
-            <input type="date" name="policyExpirationDate" className="input mt-1" />
-          </div>
-        </div>
-
         <div>
           <label className="field-label">Status</label>
-          <select name="status" defaultValue="Active" className="input mt-1">
+          <select name="status" defaultValue="On Track" className="input mt-1">
             {CLIENT_STATUSES.map((s) => (
               <option key={s} value={s}>
                 {s}

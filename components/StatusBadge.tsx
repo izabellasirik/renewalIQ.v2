@@ -18,9 +18,11 @@ export function documentStatusTone(status: string): Tone {
 }
 
 export function clientStatusTone(status: string): Tone {
-  if (status === "Active") return "good";
+  if (status === "Action Required") return "bad";
   if (status === "Waiting on Client") return "warn";
-  if (status === "Closed") return "neutral";
+  if (status === "Waiting for Quote") return "warn";
+  if (status === "On Track") return "good";
+  if (status === "Completed") return "neutral";
   return "neutral";
 }
 

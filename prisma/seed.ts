@@ -471,7 +471,7 @@ async function main() {
     phone: "(414) 555-0177",
     renewalDate: d(40),
     policyExpirationDate: d(43),
-    status: "In Review",
+    status: "On Track",
     createdAt: ago(30),
   });
   await addContact(metro.id, {
@@ -687,7 +687,7 @@ async function main() {
     phone: "(312) 555-0166",
     renewalDate: d(75),
     policyExpirationDate: d(78),
-    status: "Active",
+    status: "Completed",
     createdAt: ago(90),
   });
   await addContact(blueline.id, {
@@ -861,7 +861,7 @@ async function main() {
     phone: "(617) 555-0110",
     renewalDate: d(22),
     policyExpirationDate: d(25),
-    status: "In Review",
+    status: "Action Required",
     createdAt: ago(35),
   });
   await addContact(northeast.id, {
@@ -950,7 +950,7 @@ async function main() {
     phone: "(757) 555-0135",
     renewalDate: d(16),
     policyExpirationDate: d(19),
-    status: "Waiting on Client",
+    status: "Action Required",
     createdAt: ago(28),
   });
   await addContact(atlantic.id, {
@@ -1032,7 +1032,7 @@ async function main() {
     phone: "(704) 555-0159",
     renewalDate: d(24),
     policyExpirationDate: d(27),
-    status: "Waiting on Client",
+    status: "Waiting for Quote",
     createdAt: ago(26),
   });
   await addContact(liberty.id, {
@@ -1109,7 +1109,7 @@ async function main() {
     phone: "(720) 555-0184",
     renewalDate: d(55),
     policyExpirationDate: d(58),
-    status: "Active",
+    status: "On Track",
     createdAt: ago(70),
   });
   await addContact(summit.id, {
@@ -1209,7 +1209,7 @@ async function main() {
     phone: "(602) 555-0171",
     renewalDate: d(60),
     policyExpirationDate: d(63),
-    status: "In Review",
+    status: "Action Required",
     createdAt: ago(4),
   });
   await addContact(interstate.id, {

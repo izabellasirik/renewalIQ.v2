@@ -7,20 +7,32 @@ _Deployed via Vercel._
 ## Stack
 
 - **Next.js (App Router) + TypeScript** — Server Actions handle all mutations, no separate API layer.
-- **Prisma + SQLite** — file-based database (`prisma/dev.db`), persists across restarts.
+- **Prisma + PostgreSQL** — hosted Postgres (e.g. Vercel Postgres/Neon) in every environment, so local dev and production behave identically. (Serverless platforms like Vercel have an ephemeral, mostly read-only filesystem, so a file-based SQLite database doesn't survive there — see "Deploying to Vercel" below.)
 - **Tailwind CSS** — calm, minimal design system defined in `app/globals.css`.
-- Local file storage for uploaded documents (`public/uploads/<clientId>/...`) behind a small `lib/storage.ts` seam, so a future Dropbox/S3 integration is a storage-provider swap, not a schema rebuild.
+- Local file storage for uploaded documents (`public/uploads/<clientId>/...`) behind a small `lib/storage.ts` seam, so a future Dropbox/S3 integration is a storage-provider swap, not a schema rebuild. **Known limitation:** this still writes to local disk, which doesn't persist on Vercel's serverless runtime — file uploads need a hosted store (e.g. Vercel Blob) before that feature works in production; not yet done.
 
 ## Getting started
 
 ```bash
-npm install
-npx prisma migrate dev   # creates prisma/dev.db
-npm run db:seed          # populates realistic demo data
+cp .env.example .env     # then fill in a real Postgres connection string
+npm install               # also runs `prisma generate` via postinstall
+npx prisma migrate deploy # applies committed migrations
+npm run db:seed           # populates realistic demo data
 npm run dev
 ```
 
 Open http://localhost:3000 — you'll land on **Today's Plate**.
+
+Any Postgres works for local dev — a local instance, Docker, or a free Neon/Vercel Postgres branch. Just don't point local dev at your production database.
+
+## Deploying to Vercel
+
+1. In the Vercel project, add a Postgres database (**Storage → Create Database → Postgres**, or connect an external one like Neon/Supabase) and let Vercel wire up the `DATABASE_URL` environment variable for you.
+2. Redeploy. The build script (`prisma generate && prisma migrate deploy && next build`) generates the Prisma Client and applies all committed migrations automatically on every deploy — no manual migration step needed.
+3. Seed demo data once, from your machine, pointed at the production `DATABASE_URL`:
+   ```bash
+   DATABASE_URL="<value from Vercel>" npm run db:seed
+   ```
 
 ## Core workflow
 

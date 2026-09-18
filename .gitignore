@@ -30,9 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — DATABASE_URL contains real credentials, never commit it.
+# Set values in Vercel Project Settings > Environment Variables instead;
+# see .env.example for what's required locally.
 .env*
-!.env
+!.env.example
 
 # vercel
 .vercel
@@ -40,10 +42,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# database (generated locally by prisma migrate + seed)
-/prisma/dev.db
-/prisma/dev.db-journal
 
 # uploaded documents (local storage backend)
 /public/uploads/*

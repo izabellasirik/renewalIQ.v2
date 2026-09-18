@@ -2,6 +2,8 @@
 
 A workflow tool for commercial insurance brokers: what am I waiting for, what happened with this client, and who do I need to follow up with today.
 
+_Deployed via Vercel._
+
 ## Stack
 
 - **Next.js (App Router) + TypeScript** — Server Actions handle all mutations, no separate API layer.

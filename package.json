@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "node scripts/run-with-direct-url.mjs \"prisma generate && prisma migrate deploy\" && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate",
+    "postinstall": "node scripts/run-with-direct-url.mjs prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:migrate-statuses": "tsx prisma/migrate-client-statuses.ts"
   },

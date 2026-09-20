@@ -26,42 +26,38 @@ export async function DocumentsTab({ clientId }: { clientId: string }) {
   );
 
   return (
-    <div className="space-y-8">
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Documents</h2>
-          <ClientDocumentsUpload clientId={clientId} />
-        </div>
+    <div className="space-y-6">
+      <section className="surface-card p-6">
+        <ClientDocumentsUpload clientId={clientId} />
 
-        {docs.length === 0 ? (
-          <div className="surface-card p-8 text-center text-muted">
-            No documents uploaded yet. Add required documents to get started — RenewalIQ will read and summarize
-            them below.
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {docs.map((doc) => (
-              <ClientDocumentRow key={doc.id} doc={doc} clientId={clientId} />
-            ))}
-          </div>
-        )}
+        <div className="mt-4">
+          {docs.length === 0 ? (
+            <p className="text-sm text-muted">No documents uploaded yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {docs.map((doc) => (
+                <ClientDocumentRow key={doc.id} doc={doc} clientId={clientId} />
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {withInsight.length > 0 && (
-        <section>
-          <h2 className="mb-4 text-sm font-semibold text-foreground">Document Insights</h2>
+        <section className="surface-card p-6">
+          <h2 className="mb-3 text-sm font-semibold text-foreground">Needs Attention</h2>
+          <NeedsAttentionPanel items={attentionItems} />
+        </section>
+      )}
+
+      {withInsight.length > 0 && (
+        <section className="surface-card p-6">
+          <h2 className="mb-3 text-sm font-semibold text-foreground">Document Insights</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {withInsight.map((doc) => (
               <DocumentInsightCard key={doc.id} file={doc} insight={doc.insight!} knownVins={knownVins} />
             ))}
           </div>
-        </section>
-      )}
-
-      {withInsight.length > 0 && (
-        <section>
-          <h2 className="mb-4 text-sm font-semibold text-foreground">Needs Attention</h2>
-          <NeedsAttentionPanel items={attentionItems} />
         </section>
       )}
     </div>

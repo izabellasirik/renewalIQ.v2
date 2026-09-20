@@ -17,20 +17,23 @@ export function ClientDocumentsUpload({ clientId }: { clientId: string }) {
     fd.set("clientId", clientId);
     Array.from(fileList).forEach((f) => fd.append("files", f));
     startTransition(async () => {
-      try {
-        await uploadClientDocuments(fd);
+      const result = await uploadClientDocuments(fd);
+      if (result.ok) {
         setOpen(false);
-      } catch {
-        setError("Upload failed. Please try again.");
+      } else {
+        setError(result.error);
       }
     });
   }
 
   return (
     <div>
-      <button type="button" className="btn btn-primary" onClick={() => setOpen((o) => !o)}>
-        + Add Required Documents
-      </button>
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-foreground">Documents</h2>
+        <button type="button" className="btn btn-primary" onClick={() => setOpen((o) => !o)}>
+          + Add Documents
+        </button>
+      </div>
 
       {open && (
         <div
@@ -44,7 +47,7 @@ export function ClientDocumentsUpload({ clientId }: { clientId: string }) {
             setDragOver(false);
             submitFiles(e.dataTransfer.files);
           }}
-          className={`mt-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
+          className={`mt-3 w-full rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
             dragOver ? "border-accent bg-[var(--status-good-bg)]" : "border-border bg-[var(--background)]"
           }`}
         >

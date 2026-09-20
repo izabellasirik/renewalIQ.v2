@@ -24,18 +24,30 @@ function revalidateClient(clientId: string) {
   revalidatePath(`/clients/${clientId}`);
 }
 
-export async function uploadClientDocuments(formData: FormData) {
+type UploadResult = { ok: true } | { ok: false; error: string };
+
+// Server Actions redact thrown Error messages in production (Next.js replaces
+// them with a generic message + digest, to avoid leaking server internals) —
+// so an expected, safe-to-show failure must come back as a normal return
+// value instead of a thrown exception, or the client never sees it.
+export async function uploadClientDocuments(formData: FormData): Promise<UploadResult> {
   const clientId = str(formData, "clientId");
-  if (!clientId) throw new Error("Missing client.");
+  if (!clientId) return { ok: false, error: "Missing client." };
 
   const files = formData.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
-  if (files.length === 0) throw new Error("No files selected.");
+  if (files.length === 0) return { ok: false, error: "No files selected." };
 
   const vehicles = await prisma.vehicle.findMany({ where: { clientId }, select: { vin: true } });
   const knownVins = vehicles.map((v) => v.vin).filter((v): v is string => !!v);
 
   for (const file of files) {
-    const stored = await saveUploadedFile(clientId, file);
+    let stored;
+    try {
+      stored = await saveUploadedFile(clientId, file);
+    } catch (err) {
+      console.error(`[uploadClientDocuments] Failed to store "${file.name}" for client ${clientId}:`, err);
+      return { ok: false, error: `Couldn't save "${file.name}" — file storage isn't available in this environment yet. See server logs for details.` };
+    }
     const category = classifyByFilename(file.name);
 
     const created = await prisma.file.create({
@@ -83,6 +95,7 @@ export async function uploadClientDocuments(formData: FormData) {
   });
 
   revalidateClient(clientId);
+  return { ok: true };
 }
 
 export async function deleteClientDocument(formData: FormData) {

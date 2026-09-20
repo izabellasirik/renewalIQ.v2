@@ -1,29 +1,18 @@
 import { prisma } from "@/lib/db";
 import { ClientDocumentsUpload } from "@/components/ClientDocumentsUpload";
 import { ClientDocumentRow } from "@/components/ClientDocumentRow";
-import { DocumentInsightCard } from "@/components/DocumentInsightCard";
-import { NeedsAttentionPanel, type AttentionItem } from "@/components/NeedsAttentionPanel";
-import type { DocumentAnalysisCategory, DocumentIssue } from "@/lib/documentAnalysis";
+
+// Needs Attention / Document Insights sections are temporarily disabled
+// (not removed) — see components/DocumentInsightCard.tsx and
+// components/NeedsAttentionPanel.tsx, still wired up and populated by the
+// upload pipeline, just not rendered here for now.
 
 export async function DocumentsTab({ clientId }: { clientId: string }) {
-  const [docs, vehicles] = await Promise.all([
-    prisma.file.findMany({
-      where: { clientId, purpose: "client_document" },
-      include: { insight: true },
-      orderBy: { uploadedAt: "desc" },
-    }),
-    prisma.vehicle.findMany({ where: { clientId }, select: { vin: true } }),
-  ]);
-
-  const knownVins = vehicles.map((v) => v.vin).filter((v): v is string => !!v);
-  const withInsight = docs.filter((d) => d.insight);
-
-  const attentionItems: AttentionItem[] = withInsight.flatMap((d) =>
-    (d.insight!.issues as unknown as DocumentIssue[]).map((issue) => ({
-      issue,
-      documentType: d.insight!.documentType as DocumentAnalysisCategory,
-    }))
-  );
+  const docs = await prisma.file.findMany({
+    where: { clientId, purpose: "client_document" },
+    include: { insight: true },
+    orderBy: { uploadedAt: "desc" },
+  });
 
   return (
     <div className="space-y-6">
@@ -42,24 +31,6 @@ export async function DocumentsTab({ clientId }: { clientId: string }) {
           )}
         </div>
       </section>
-
-      {withInsight.length > 0 && (
-        <section className="surface-card p-6">
-          <h2 className="mb-3 text-sm font-semibold text-foreground">Needs Attention</h2>
-          <NeedsAttentionPanel items={attentionItems} />
-        </section>
-      )}
-
-      {withInsight.length > 0 && (
-        <section className="surface-card p-6">
-          <h2 className="mb-3 text-sm font-semibold text-foreground">Document Insights</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {withInsight.map((doc) => (
-              <DocumentInsightCard key={doc.id} file={doc} insight={doc.insight!} knownVins={knownVins} />
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

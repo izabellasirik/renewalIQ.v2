@@ -18,15 +18,15 @@ export function ClientCard({
     primaryContactName: string | null;
     renewalDate: Date | null;
     status: string;
-    missingCount: number;
-    totalDocuments: number;
+    documentsComplete: boolean;
     nextFollowUpDate: Date | null;
   };
 }) {
-  const missingLabel =
-    client.missingCount > 0 ? `${client.missingCount} missing` : client.totalDocuments > 0 ? "All received" : "—";
-  const missingToneClass =
-    client.missingCount > 0 ? TONE_TEXT_CLASS.warn : client.totalDocuments > 0 ? TONE_TEXT_CLASS.good : "text-muted";
+  // Broker-confirmed only — never inferred from checklist counts, since a
+  // fully-checked-off checklist and "nothing left to collect" aren't the
+  // same fact (see Client.documentsComplete / Overview tab's toggle).
+  const missingLabel = client.documentsComplete ? "All received" : "—";
+  const missingToneClass = client.documentsComplete ? TONE_TEXT_CLASS.good : "text-muted";
 
   return (
     <Link href={`/clients/${client.id}`} className="surface-card block p-5 transition-shadow hover:shadow-sm">

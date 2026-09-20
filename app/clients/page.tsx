@@ -29,7 +29,6 @@ export default async function ClientsPage({
       ],
     },
     include: {
-      documentRequirements: true,
       followUps: { where: { completed: false }, orderBy: { dueDate: "asc" }, take: 1 },
     },
     orderBy: { companyName: "asc" },
@@ -41,8 +40,7 @@ export default async function ClientsPage({
     primaryContactName: c.primaryContactName,
     renewalDate: c.renewalDate,
     status: c.status,
-    missingCount: c.documentRequirements.filter((d) => d.status !== "Received").length,
-    totalDocuments: c.documentRequirements.length,
+    documentsComplete: c.documentsComplete,
     nextFollowUpDate: c.followUps[0]?.dueDate ?? null,
   }));
 

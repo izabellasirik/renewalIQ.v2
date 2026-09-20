@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { ClientDetailsCard } from "@/components/ClientDetailsCard";
 import { AddDocumentButton } from "@/components/AddDocumentButton";
 import { DocumentRow } from "@/components/DocumentRow";
+import { DocumentsCompleteToggle } from "@/components/DocumentsCompleteToggle";
 import { EditFollowUpButton } from "@/components/EditFollowUpButton";
 import { ScheduleFollowUpButton } from "@/components/ScheduleFollowUpButton";
 import { formatShortDate, formatDateTime } from "@/lib/format";
@@ -57,9 +58,12 @@ export async function OverviewTab({ clientId }: { clientId: string }) {
             </div>
           </>
         )}
-        <Link href={`/clients/${clientId}?tab=documents`} className="mt-3 inline-block text-sm text-accent hover:underline">
-          View Uploaded Documents →
-        </Link>
+        <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
+          <DocumentsCompleteToggle clientId={clientId} complete={client.documentsComplete} />
+          <Link href={`/clients/${clientId}?tab=documents`} className="text-sm text-accent hover:underline">
+            View Uploaded Documents →
+          </Link>
+        </div>
       </section>
 
       <section className="surface-card p-6">

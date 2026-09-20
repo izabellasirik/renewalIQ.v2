@@ -21,6 +21,10 @@ model Client {
   renewalDate          DateTime?
   policyExpirationDate DateTime?
   status               String    @default("Active")
+  // Explicitly set by the broker (Overview tab) — never inferred from
+  // checklist counts, since a fully-checked-off checklist and "nothing left
+  // to collect" aren't the same fact. Defaults to false/unconfirmed.
+  documentsComplete    Boolean   @default(false)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 

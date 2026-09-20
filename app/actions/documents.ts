@@ -18,6 +18,16 @@ function revalidateClient(clientId: string) {
   revalidatePath("/today");
 }
 
+// Broker-controlled, never inferred from checklist counts — see Client.documentsComplete.
+export async function setDocumentsComplete(formData: FormData) {
+  const clientId = str(formData, "clientId");
+  const complete = str(formData, "complete") === "true";
+  if (!clientId) throw new Error("Missing client.");
+
+  await prisma.client.update({ where: { id: clientId }, data: { documentsComplete: complete } });
+  revalidateClient(clientId);
+}
+
 export async function addDocumentRequirement(formData: FormData) {
   const clientId = str(formData, "clientId");
   const name = str(formData, "name");

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { clientStatusTone } from "./StatusBadge";
+import { StatusBadge, clientStatusTone } from "./StatusBadge";
 import { formatShortDate } from "@/lib/format";
 
 const TONE_TEXT_CLASS: Record<"good" | "warn" | "bad" | "neutral", string> = {
@@ -33,7 +33,9 @@ export function ClientCard({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-lg font-semibold text-foreground">{client.companyName}</p>
-          <p className={`mt-0.5 text-sm font-medium ${TONE_TEXT_CLASS[clientStatusTone(client.status)]}`}>{client.status}</p>
+          <div className="mt-1.5">
+            <StatusBadge label={client.status} tone={clientStatusTone(client.status)} />
+          </div>
         </div>
         <span className="mt-1 shrink-0 text-muted" aria-hidden>
           ›

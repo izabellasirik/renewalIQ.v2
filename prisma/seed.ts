@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { addDays, subDays } from "date-fns";
+import { seedDemoDocumentInsights } from "./demoDocumentInsights";
 
 const prisma = new PrismaClient();
 
@@ -326,6 +327,16 @@ async function main() {
     registrationExpiration: d(300),
     registrationReceived: true,
   });
+
+  // Documents tab AI-analysis experiment — a few clearly-labeled demo
+  // documents/insights so the feature is visible with zero configuration.
+  await seedDemoDocumentInsights(prisma, abc.id, [
+    "1FUJGHDV8NLAA1234",
+    "4V4NC9EH5MN123456",
+    "1XKYD49X1LJ778899",
+    "1XPBD49X0KD112233",
+    "1M1AN07Y7PM998877",
+  ]);
 
   // Markets — full pipeline spread
   const abcProgressive = await addMarket(abc.id, {

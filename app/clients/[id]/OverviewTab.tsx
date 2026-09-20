@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ClientDetailsCard } from "@/components/ClientDetailsCard";
 import { AddDocumentButton } from "@/components/AddDocumentButton";
+import { DocumentRow } from "@/components/DocumentRow";
 import { EditFollowUpButton } from "@/components/EditFollowUpButton";
 import { ScheduleFollowUpButton } from "@/components/ScheduleFollowUpButton";
 import { formatShortDate, formatDateTime } from "@/lib/format";
@@ -11,6 +12,7 @@ export async function OverviewTab({ clientId }: { clientId: string }) {
     prisma.client.findUniqueOrThrow({ where: { id: clientId } }),
     prisma.documentRequirement.findMany({
       where: { clientId, status: { not: "Received" } },
+      include: { files: true },
       orderBy: { createdAt: "asc" },
     }),
     prisma.followUp.findFirst({
@@ -38,18 +40,25 @@ export async function OverviewTab({ clientId }: { clientId: string }) {
           <p className="text-sm text-muted">Nothing missing — all requirements are in hand.</p>
         ) : (
           <>
-            <p className="mb-2 text-sm text-muted">
+            <p className="mb-3 text-sm text-muted">
               {missingDocs.length} {missingDocs.length === 1 ? "item" : "items"} missing
             </p>
-            <ul className="list-inside list-disc space-y-1 text-sm text-foreground">
+            <div className="space-y-3">
               {missingDocs.map((d) => (
-                <li key={d.id}>{d.name}</li>
+                <DocumentRow
+                  key={d.id}
+                  doc={d}
+                  clientId={clientId}
+                  companyName={client.companyName}
+                  contactName={client.primaryContactName}
+                  contacts={contacts}
+                />
               ))}
-            </ul>
+            </div>
           </>
         )}
         <Link href={`/clients/${clientId}?tab=documents`} className="mt-3 inline-block text-sm text-accent hover:underline">
-          View Documents →
+          View Uploaded Documents →
         </Link>
       </section>
 

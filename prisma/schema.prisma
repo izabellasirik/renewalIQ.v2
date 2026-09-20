@@ -88,6 +88,36 @@ model File {
   path                  String
   provider              String               @default("local")
   uploadedAt            DateTime             @default(now())
+
+  // Document Insights (AI/OCR extraction experiment) — only set for files
+  // uploaded through the Documents tab's general upload area
+  // (purpose: "client_document"), never for checklist/driver/vehicle/market
+  // attachments above. `analysisStatus` only ever persists "Ready" or
+  // "Failed" (a real processing exception) — "Needs Review" is always
+  // computed from the linked DocumentInsight's issues, never its own
+  // persisted state.
+  category       String?
+  analysisStatus String           @default("Ready")
+  isDemo         Boolean          @default(false)
+  insight        DocumentInsight?
+}
+
+// Structured, provider-agnostic extraction result for one uploaded File
+// (see lib/documentAnalysis). Workflow-only: issues are always advisory
+// ("review" / "update" / "mismatch"), never an underwriting or carrier
+// eligibility decision.
+model DocumentInsight {
+  id              String   @id @default(cuid())
+  fileId          String   @unique
+  file            File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  documentType    String
+  extractedFields Json
+  issues          Json
+  confidence      String
+  needsReview     Boolean  @default(false)
+  summary         String
+  source          String
+  createdAt       DateTime @default(now())
 }
 
 model Activity {

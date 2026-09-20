@@ -6,6 +6,7 @@ export const ACTIVITY_TYPES = [
   "Client Contacted",
   "Document Requested",
   "Document Received",
+  "Document Uploaded",
   "Follow-Up",
   "Note",
   "Driver Added",

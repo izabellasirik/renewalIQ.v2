@@ -9,7 +9,8 @@
     "lint": "eslint",
     "postinstall": "node scripts/run-with-direct-url.mjs prisma generate",
     "db:seed": "tsx prisma/seed.ts",
-    "db:migrate-statuses": "tsx prisma/migrate-client-statuses.ts"
+    "db:migrate-statuses": "tsx prisma/migrate-client-statuses.ts",
+    "db:seed-document-insights-demo": "tsx prisma/seed-document-insights-demo.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

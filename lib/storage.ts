@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, unlink } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 
@@ -36,4 +36,15 @@ export async function saveUploadedFile(
     path: `/uploads/${clientId}/${storedName}`,
     filename: file.name || safeName,
   };
+}
+
+/** Mirror of saveUploadedFile — removes a file previously stored at `storedPath` (the `path` on a File row). Best-effort: a missing file is not an error, since the DB row is the source of truth. */
+export async function deleteStoredFile(storedPath: string): Promise<void> {
+  if (!storedPath.startsWith("/uploads/")) return;
+  const absolute = path.join(process.cwd(), "public", storedPath);
+  try {
+    await unlink(absolute);
+  } catch {
+    // Already gone — nothing to do.
+  }
 }

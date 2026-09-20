@@ -1,42 +1,68 @@
 import { prisma } from "@/lib/db";
-import { AddDocumentButton } from "@/components/AddDocumentButton";
-import { DocumentRow } from "@/components/DocumentRow";
+import { ClientDocumentsUpload } from "@/components/ClientDocumentsUpload";
+import { ClientDocumentRow } from "@/components/ClientDocumentRow";
+import { DocumentInsightCard } from "@/components/DocumentInsightCard";
+import { NeedsAttentionPanel, type AttentionItem } from "@/components/NeedsAttentionPanel";
+import type { DocumentAnalysisCategory, DocumentIssue } from "@/lib/documentAnalysis";
 
 export async function DocumentsTab({ clientId }: { clientId: string }) {
-  const [client, docs, contacts] = await Promise.all([
-    prisma.client.findUniqueOrThrow({ where: { id: clientId } }),
-    prisma.documentRequirement.findMany({
-      where: { clientId },
-      include: { files: true },
-      orderBy: { createdAt: "asc" },
+  const [docs, vehicles] = await Promise.all([
+    prisma.file.findMany({
+      where: { clientId, purpose: "client_document" },
+      include: { insight: true },
+      orderBy: { uploadedAt: "desc" },
     }),
-    prisma.contact.findMany({ where: { clientId } }),
+    prisma.vehicle.findMany({ where: { clientId }, select: { vin: true } }),
   ]);
 
-  return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-foreground">Document Checklist</h2>
-        <AddDocumentButton clientId={clientId} />
-      </div>
+  const knownVins = vehicles.map((v) => v.vin).filter((v): v is string => !!v);
+  const withInsight = docs.filter((d) => d.insight);
 
-      {docs.length === 0 ? (
-        <div className="surface-card p-8 text-center text-muted">
-          No document requirements yet. Add the documents you need to collect for this account.
+  const attentionItems: AttentionItem[] = withInsight.flatMap((d) =>
+    (d.insight!.issues as unknown as DocumentIssue[]).map((issue) => ({
+      issue,
+      documentType: d.insight!.documentType as DocumentAnalysisCategory,
+    }))
+  );
+
+  return (
+    <div className="space-y-8">
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-foreground">Documents</h2>
+          <ClientDocumentsUpload clientId={clientId} />
         </div>
-      ) : (
-        <div className="space-y-3">
-          {docs.map((doc) => (
-            <DocumentRow
-              key={doc.id}
-              doc={doc}
-              clientId={clientId}
-              companyName={client.companyName}
-              contactName={client.primaryContactName}
-              contacts={contacts}
-            />
-          ))}
-        </div>
+
+        {docs.length === 0 ? (
+          <div className="surface-card p-8 text-center text-muted">
+            No documents uploaded yet. Add required documents to get started — RenewalIQ will read and summarize
+            them below.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {docs.map((doc) => (
+              <ClientDocumentRow key={doc.id} doc={doc} clientId={clientId} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {withInsight.length > 0 && (
+        <section>
+          <h2 className="mb-4 text-sm font-semibold text-foreground">Document Insights</h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {withInsight.map((doc) => (
+              <DocumentInsightCard key={doc.id} file={doc} insight={doc.insight!} knownVins={knownVins} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {withInsight.length > 0 && (
+        <section>
+          <h2 className="mb-4 text-sm font-semibold text-foreground">Needs Attention</h2>
+          <NeedsAttentionPanel items={attentionItems} />
+        </section>
       )}
     </div>
   );

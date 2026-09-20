@@ -62,7 +62,6 @@ export function ClientDocumentsUpload({ clientId }: { clientId: string }) {
                   Browse Files
                 </button>
               </p>
-              <p className="mt-2 text-xs text-muted">PDF, images, or any document type.</p>
             </>
           )}
           <input

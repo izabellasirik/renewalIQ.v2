@@ -42,6 +42,7 @@ export default async function ClientsPage({
     renewalDate: c.renewalDate,
     status: c.status,
     missingCount: c.documentRequirements.filter((d) => d.status !== "Received").length,
+    totalDocuments: c.documentRequirements.length,
     nextFollowUpDate: c.followUps[0]?.dueDate ?? null,
   }));
 

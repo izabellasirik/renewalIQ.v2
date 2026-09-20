@@ -1,6 +1,13 @@
 import Link from "next/link";
-import { StatusBadge, clientStatusTone } from "./StatusBadge";
+import { clientStatusTone } from "./StatusBadge";
 import { formatShortDate } from "@/lib/format";
+
+const TONE_TEXT_CLASS: Record<"good" | "warn" | "bad" | "neutral", string> = {
+  good: "text-[var(--status-good)]",
+  warn: "text-[var(--status-warn)]",
+  bad: "text-[var(--status-bad)]",
+  neutral: "text-[var(--status-neutral)]",
+};
 
 export function ClientCard({
   client,
@@ -12,15 +19,21 @@ export function ClientCard({
     renewalDate: Date | null;
     status: string;
     missingCount: number;
+    totalDocuments: number;
     nextFollowUpDate: Date | null;
   };
 }) {
+  const missingLabel =
+    client.missingCount > 0 ? `${client.missingCount} missing` : client.totalDocuments > 0 ? "All received" : "—";
+  const missingToneClass =
+    client.missingCount > 0 ? TONE_TEXT_CLASS.warn : client.totalDocuments > 0 ? TONE_TEXT_CLASS.good : "text-muted";
+
   return (
     <Link href={`/clients/${client.id}`} className="surface-card block p-5 transition-shadow hover:shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-lg font-semibold text-foreground">{client.companyName}</p>
-          <p className="mt-0.5 text-sm text-muted">{client.primaryContactName ?? client.status}</p>
+          <p className={`mt-0.5 text-sm font-medium ${TONE_TEXT_CLASS[clientStatusTone(client.status)]}`}>{client.status}</p>
         </div>
         <span className="mt-1 shrink-0 text-muted" aria-hidden>
           ›
@@ -39,18 +52,12 @@ export function ClientCard({
       <div className="flex items-start justify-between gap-4 text-sm">
         <div>
           <p className="text-muted">Missing documents</p>
-          <p className={`mt-0.5 font-semibold ${client.missingCount > 0 ? "text-[var(--status-warn)]" : "text-[var(--status-good)]"}`}>
-            {client.missingCount > 0 ? `${client.missingCount} missing` : "All received"}
-          </p>
+          <p className={`mt-0.5 font-semibold ${missingToneClass}`}>{missingLabel}</p>
         </div>
         <div className="text-right">
           <p className="text-muted">Next follow-up</p>
           <p className="mt-0.5 font-semibold text-foreground">{formatShortDate(client.nextFollowUpDate)}</p>
         </div>
-      </div>
-
-      <div className="mt-4">
-        <StatusBadge label={client.status} tone={clientStatusTone(client.status)} />
       </div>
     </Link>
   );

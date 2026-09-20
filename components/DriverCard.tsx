@@ -110,12 +110,12 @@ export function DriverCard({ driver, clientId }: { driver: DriverFull; clientId:
         </div>
         <div className="mt-1 flex flex-wrap gap-3">
           {licenseFile && (
-            <a href={licenseFile.path} target="_blank" className="text-xs text-accent hover:underline">
+            <a href={`/api/files/${licenseFile.id}`} target="_blank" className="text-xs text-accent hover:underline">
               {licenseFile.filename}
             </a>
           )}
           {previousLicenseFile && (
-            <a href={previousLicenseFile.path} target="_blank" className="text-xs text-accent hover:underline">
+            <a href={`/api/files/${previousLicenseFile.id}`} target="_blank" className="text-xs text-accent hover:underline">
               Previous license: {previousLicenseFile.filename}
             </a>
           )}
@@ -189,7 +189,7 @@ export function DriverCard({ driver, clientId }: { driver: DriverFull; clientId:
               </ul>
             )}
             {latestMvr.files.length > 0 && (
-              <a href={latestMvr.files[0].path} target="_blank" className="mt-2 inline-block text-xs text-accent hover:underline">
+              <a href={`/api/files/${latestMvr.files[0].id}`} target="_blank" className="mt-2 inline-block text-xs text-accent hover:underline">
                 {latestMvr.files[0].filename}
               </a>
             )}
@@ -231,7 +231,7 @@ export function DriverCard({ driver, clientId }: { driver: DriverFull; clientId:
               Issued {formatShortDate(latestMedical.issueDate)} · Expires {formatShortDate(latestMedical.expirationDate)}
             </p>
             {latestMedical.files.length > 0 && (
-              <a href={latestMedical.files[0].path} target="_blank" className="mt-1 inline-block text-xs text-accent hover:underline">
+              <a href={`/api/files/${latestMedical.files[0].id}`} target="_blank" className="mt-1 inline-block text-xs text-accent hover:underline">
                 {latestMedical.files[0].filename}
               </a>
             )}

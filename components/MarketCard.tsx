@@ -150,7 +150,7 @@ export function MarketCard({
           label="Upload Quote Document"
         />
         {quoteFile && (
-          <a href={quoteFile.path} target="_blank" className="text-xs text-accent hover:underline">
+          <a href={`/api/files/${quoteFile.id}`} target="_blank" className="text-xs text-accent hover:underline">
             {quoteFile.filename}
           </a>
         )}

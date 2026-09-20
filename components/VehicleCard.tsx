@@ -112,7 +112,7 @@ export function VehicleCard({ vehicle, clientId }: { vehicle: VehicleFull; clien
           label="Upload Registration"
         />
         {registrationFile && (
-          <a href={registrationFile.path} target="_blank" className="text-xs text-accent hover:underline">
+          <a href={`/api/files/${registrationFile.id}`} target="_blank" className="text-xs text-accent hover:underline">
             {registrationFile.filename}
           </a>
         )}

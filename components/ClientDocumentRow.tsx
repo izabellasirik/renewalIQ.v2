@@ -38,7 +38,7 @@ export function ClientDocumentRow({ doc, clientId }: { doc: Row; clientId: strin
       </div>
       <div className="flex items-center gap-3">
         <StatusBadge label={statusLabel} tone={statusTone} />
-        <a href={doc.path} target="_blank" rel="noopener noreferrer" className="btn btn-secondary text-xs">
+        <a href={`/api/files/${doc.id}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary text-xs">
           View
         </a>
         <DeleteButton

@@ -107,7 +107,7 @@ export async function deleteClientDocument(formData: FormData) {
   if (!file || file.clientId !== clientId) throw new Error("Document not found.");
 
   await prisma.file.delete({ where: { id } });
-  await deleteStoredFile(file.path);
+  await deleteStoredFile(file.path, file.provider);
 
   revalidateClient(clientId);
 }

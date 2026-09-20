@@ -53,7 +53,7 @@ export function DocumentRow({
               <ul className="mt-1 space-y-0.5">
                 {doc.files.map((f) => (
                   <li key={f.id}>
-                    <a href={f.path} target="_blank" className="text-xs text-accent hover:underline">
+                    <a href={`/api/files/${f.id}`} target="_blank" className="text-xs text-accent hover:underline">
                       {f.filename}
                     </a>
                   </li>

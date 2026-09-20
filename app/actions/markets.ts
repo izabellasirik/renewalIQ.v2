@@ -28,18 +28,18 @@ function revalidateClient(clientId: string) {
 function statusChangeActivity(carrierName: string, fromStatus: string, toStatus: string) {
   switch (toStatus) {
     case "Submitted":
-      return { type: "Market Status Changed" as const, description: `Submission sent to ${carrierName}.` };
+      return { type: "Quote Status Changed" as const, description: `Submission sent to ${carrierName}.` };
     case "Quote Received":
       return { type: "Quote Received" as const, description: `Quote received from ${carrierName}.` };
     case "More Info Needed":
-      return { type: "Market Status Changed" as const, description: `${carrierName} requested more information.` };
+      return { type: "Quote Status Changed" as const, description: `${carrierName} requested more information.` };
     case "Declined":
-      return { type: "Market Status Changed" as const, description: `${carrierName} declined.` };
+      return { type: "Quote Status Changed" as const, description: `${carrierName} declined.` };
     case "Bound":
-      return { type: "Market Status Changed" as const, description: `${carrierName} marked Bound.` };
+      return { type: "Quote Status Changed" as const, description: `${carrierName} marked Bound.` };
     default:
       return {
-        type: "Market Status Changed" as const,
+        type: "Quote Status Changed" as const,
         description: `${carrierName} status changed from ${fromStatus} to ${toStatus}.`,
       };
   }
@@ -67,8 +67,8 @@ export async function addMarket(formData: FormData) {
 
   await logActivity(prisma, {
     clientId,
-    type: "Market Added",
-    description: `${carrierName} added as market.`,
+    type: "Quote Added",
+    description: `${carrierName} added as quote.`,
   });
 
   revalidateClient(clientId);

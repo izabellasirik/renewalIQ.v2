@@ -45,7 +45,7 @@ export function MarketCard({
         <input type="hidden" name="clientId" value={clientId} />
 
         <div>
-          <label className="field-label">Carrier / Market Name</label>
+          <label className="field-label">Carrier Name</label>
           <input name="carrierName" defaultValue={market.carrierName} required className="input mt-1" />
         </div>
         <div>
@@ -127,7 +127,7 @@ export function MarketCard({
         </div>
 
         <div className="col-span-2 flex justify-end">
-          <SubmitButton className="btn btn-secondary text-xs">Save Market</SubmitButton>
+          <SubmitButton className="btn btn-secondary text-xs">Save Quote</SubmitButton>
         </div>
       </form>
 
@@ -181,7 +181,7 @@ export function MarketCard({
         <DeleteButton
           action={deleteMarket}
           hiddenFields={{ id: market.id, clientId }}
-          confirmMessage={`Remove ${market.carrierName} as a market for this account?`}
+          confirmMessage={`Remove ${market.carrierName} as a quote for this account?`}
         />
       </div>
     </Disclosure>

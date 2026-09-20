@@ -21,13 +21,13 @@ export function AddMarketButton({ clientId }: { clientId: string }) {
   return (
     <>
       <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
-        Add Market
+        Add Quote
       </button>
-      <Modal open={open} onClose={() => setOpen(false)} title="Add Market">
+      <Modal open={open} onClose={() => setOpen(false)} title="Add Quote">
         <form onSubmit={handleSubmit} className="space-y-4">
           <input type="hidden" name="clientId" value={clientId} />
           <div>
-            <label className="field-label">Carrier / Market Name</label>
+            <label className="field-label">Carrier Name</label>
             <input name="carrierName" required autoFocus className="input mt-1" placeholder="Progressive" />
           </div>
           <div>
@@ -69,7 +69,7 @@ export function AddMarketButton({ clientId }: { clientId: string }) {
               Cancel
             </button>
             <button type="submit" disabled={pending} className="btn btn-primary">
-              {pending ? "Adding..." : "Add Market"}
+              {pending ? "Adding..." : "Add Quote"}
             </button>
           </div>
         </form>

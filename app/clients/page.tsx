@@ -20,8 +20,8 @@ export default async function ClientsPage({
         q
           ? {
               OR: [
-                { companyName: { contains: q } },
-                { primaryContactName: { contains: q } },
+                { companyName: { contains: q, mode: "insensitive" } },
+                { primaryContactName: { contains: q, mode: "insensitive" } },
               ],
             }
           : {},

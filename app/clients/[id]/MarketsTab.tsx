@@ -20,7 +20,7 @@ export async function MarketsTab({ clientId }: { clientId: string }) {
     <div>
       <div className="mb-1 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-foreground">Markets</h2>
+          <h2 className="text-base font-semibold text-foreground">Quotes</h2>
           <p className="text-sm text-muted">Track carrier outreach and quote progress for this account.</p>
         </div>
         <AddMarketButton clientId={clientId} />
@@ -29,7 +29,7 @@ export async function MarketsTab({ clientId }: { clientId: string }) {
       {markets.length > 0 && (
         <p className="mb-4 mt-3 text-sm text-muted">
           <span className="font-medium text-foreground">
-            {markets.length} {markets.length === 1 ? "Market" : "Markets"}
+            {markets.length} {markets.length === 1 ? "Quote" : "Quotes"}
           </span>
           {MARKET_STATUSES.filter((s) => counts.get(s)).map((s) => (
             <span key={s}> · {counts.get(s)} {s}</span>
@@ -39,7 +39,7 @@ export async function MarketsTab({ clientId }: { clientId: string }) {
 
       {markets.length === 0 ? (
         <div className="surface-card mt-4 p-8 text-center text-muted">
-          No markets approached yet. Add a carrier to start tracking quote progress.
+          No quotes yet. Add a carrier to start tracking quote progress.
         </div>
       ) : (
         <div className="space-y-3">

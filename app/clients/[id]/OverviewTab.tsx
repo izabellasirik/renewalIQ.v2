@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { updateClientOverview } from "@/app/actions/clients";
-import { SubmitButton } from "@/components/SubmitButton";
+import { ClientDetailsCard } from "@/components/ClientDetailsCard";
+import { AddDocumentButton } from "@/components/AddDocumentButton";
 import { EditFollowUpButton } from "@/components/EditFollowUpButton";
 import { ScheduleFollowUpButton } from "@/components/ScheduleFollowUpButton";
-import { CLIENT_STATUSES } from "@/lib/constants";
-import { formatShortDate, formatDateTime, toDateInputValue } from "@/lib/format";
+import { formatShortDate, formatDateTime } from "@/lib/format";
 
 export async function OverviewTab({ clientId }: { clientId: string }) {
   const [client, missingDocs, nextFollowUp, recentActivity, contacts] = await Promise.all([
@@ -28,64 +27,13 @@ export async function OverviewTab({ clientId }: { clientId: string }) {
 
   return (
     <div className="space-y-6">
-      <section className="surface-card p-6">
-        <h2 className="mb-4 text-sm font-semibold text-foreground">Client Details</h2>
-        <form action={updateClientOverview} className="space-y-4">
-          <input type="hidden" name="id" value={client.id} />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="field-label">Company Name</label>
-              <input name="companyName" defaultValue={client.companyName} required className="input mt-1" />
-            </div>
-            <div>
-              <label className="field-label">Owner / Primary Contact</label>
-              <input name="primaryContactName" defaultValue={client.primaryContactName ?? ""} className="input mt-1" />
-            </div>
-            <div>
-              <label className="field-label">Phone</label>
-              <input name="phone" defaultValue={client.phone ?? ""} className="input mt-1" />
-            </div>
-            <div>
-              <label className="field-label">Email</label>
-              <input type="email" name="email" defaultValue={client.email ?? ""} className="input mt-1" />
-            </div>
-            <div>
-              <label className="field-label">Renewal Date</label>
-              <input
-                type="date"
-                name="renewalDate"
-                defaultValue={toDateInputValue(client.renewalDate)}
-                className="input mt-1"
-              />
-            </div>
-            <div>
-              <label className="field-label">Policy Expiration Date</label>
-              <input
-                type="date"
-                name="policyExpirationDate"
-                defaultValue={toDateInputValue(client.policyExpirationDate)}
-                className="input mt-1"
-              />
-            </div>
-            <div>
-              <label className="field-label">Status</label>
-              <select name="status" defaultValue={client.status} className="input mt-1">
-                {CLIENT_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <SubmitButton>Save Changes</SubmitButton>
-          </div>
-        </form>
-      </section>
+      <ClientDetailsCard client={client} />
 
       <section className="surface-card p-6">
-        <h2 className="mb-3 text-sm font-semibold text-foreground">Missing Information</h2>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-foreground">Missing Information</h2>
+          <AddDocumentButton clientId={clientId} />
+        </div>
         {missingDocs.length === 0 ? (
           <p className="text-sm text-muted">Nothing missing — all requirements are in hand.</p>
         ) : (

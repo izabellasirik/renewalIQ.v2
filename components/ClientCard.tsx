@@ -19,8 +19,8 @@ export function ClientCard({
     <Link href={`/clients/${client.id}`} className="surface-card block p-5 transition-shadow hover:shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-base font-semibold text-foreground">{client.companyName}</p>
-          <p className="mt-0.5 text-sm text-muted">{client.primaryContactName ?? "No contact on file"}</p>
+          <p className="truncate text-lg font-semibold text-foreground">{client.companyName}</p>
+          <p className="mt-0.5 text-sm text-muted">{client.primaryContactName ?? client.status}</p>
         </div>
         <span className="mt-1 shrink-0 text-muted" aria-hidden>
           ›

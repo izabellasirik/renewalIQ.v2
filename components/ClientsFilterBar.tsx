@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useRef, useTransition } from "react";
 import { CLIENT_STATUSES } from "@/lib/constants";
 
 const FILTERS = ["All", ...CLIENT_STATUSES];
@@ -10,6 +10,7 @@ export function ClientsFilterBar({ defaultQuery, defaultStatus }: { defaultQuery
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -18,6 +19,11 @@ export function ClientsFilterBar({ defaultQuery, defaultStatus }: { defaultQuery
     startTransition(() => {
       router.push(`/clients?${params.toString()}`);
     });
+  }
+
+  function updateSearch(value: string) {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => updateParam("q", value), 250);
   }
 
   return (
@@ -40,7 +46,7 @@ export function ClientsFilterBar({ defaultQuery, defaultStatus }: { defaultQuery
           type="search"
           placeholder="Search by company or contact..."
           defaultValue={defaultQuery}
-          onChange={(e) => updateParam("q", e.target.value)}
+          onChange={(e) => updateSearch(e.target.value)}
           className="input pl-9"
         />
       </div>

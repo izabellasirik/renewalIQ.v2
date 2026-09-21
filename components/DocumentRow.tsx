@@ -4,7 +4,7 @@ import { DeleteButton } from "./DeleteButton";
 import { EditDocumentButton } from "./EditDocumentButton";
 import { ScheduleFollowUpButton } from "./ScheduleFollowUpButton";
 import { DraftEmailButton } from "./DraftEmailButton";
-import { updateDocumentStatus, uploadDocumentFile, deleteDocumentRequirement } from "@/app/actions/documents";
+import { updateDocumentStatus, uploadDocumentFile, deleteDocumentRequirement } from "@/lib/localdb/repository";
 import { formatShortDate } from "@/lib/format";
 import { DOCUMENT_STATUSES } from "@/lib/constants";
 
@@ -14,7 +14,7 @@ type Doc = {
   status: string;
   note: string | null;
   receivedAt: Date | null;
-  files: { id: string; filename: string; path: string }[];
+  files: { id: string; filename: string }[];
 };
 
 export function DocumentRow({
@@ -52,10 +52,8 @@ export function DocumentRow({
             {doc.files.length > 0 && (
               <ul className="mt-1 space-y-0.5">
                 {doc.files.map((f) => (
-                  <li key={f.id}>
-                    <a href={`/api/files/${f.id}`} target="_blank" className="text-xs text-accent hover:underline">
-                      {f.filename}
-                    </a>
+                  <li key={f.id} className="text-xs text-muted">
+                    {f.filename} <span className="italic">(not retained in this test build)</span>
                   </li>
                 ))}
               </ul>

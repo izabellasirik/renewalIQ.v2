@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateClientOverview } from "@/app/actions/clients";
+import { updateClientOverview } from "@/lib/localdb/repository";
 import { CLIENT_STATUSES } from "@/lib/constants";
 import { formatShortDate, toDateInputValue } from "@/lib/format";
 import { StatusBadge, clientStatusTone } from "./StatusBadge";

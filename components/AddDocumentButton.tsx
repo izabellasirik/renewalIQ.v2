@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Modal } from "./Modal";
-import { addDocumentRequirement } from "@/app/actions/documents";
+import { addDocumentRequirement } from "@/lib/localdb/repository";
 
 export function AddDocumentButton({ clientId }: { clientId: string }) {
   const [open, setOpen] = useState(false);

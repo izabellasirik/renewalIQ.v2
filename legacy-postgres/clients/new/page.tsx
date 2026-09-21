@@ -1,18 +1,8 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/localdb/repository";
+import { createClient } from "@/app/actions/clients";
 import { SubmitButton } from "@/components/SubmitButton";
 import { CLIENT_STATUSES } from "@/lib/constants";
 
 export default function NewClientPage() {
-  const router = useRouter();
-
-  async function handleCreate(formData: FormData) {
-    const { id } = await createClient(formData);
-    router.push(`/clients/${id}?tab=documents&new=1`);
-  }
-
   return (
     <div className="mx-auto max-w-xl px-6 py-10">
       <h1 className="text-3xl font-semibold tracking-tight text-foreground">Add Client</h1>
@@ -20,7 +10,7 @@ export default function NewClientPage() {
         After creating the client you&apos;ll be able to add required documents right away.
       </p>
 
-      <form action={handleCreate} className="surface-card mt-6 space-y-5 p-6">
+      <form action={createClient} className="surface-card mt-6 space-y-5 p-6">
         <div>
           <label className="field-label">Company / Client Name *</label>
           <input name="companyName" required className="input mt-1" placeholder="ABC Trucking" />

@@ -1,30 +1,25 @@
-"use client";
-
-import { useMemo } from "react";
+import { prisma } from "@/lib/db";
 import { AddActivityButton } from "@/components/AddActivityButton";
 import { formatLongDate } from "@/lib/format";
 import { format } from "date-fns";
-import { useActivities, useContacts } from "@/lib/localdb/hooks";
 
-export function ActivityTab({ clientId }: { clientId: string }) {
-  const rawActivities = useActivities(clientId);
-  const contacts = useContacts(clientId);
+export async function ActivityTab({ clientId }: { clientId: string }) {
+  const [activities, contacts] = await Promise.all([
+    prisma.activity.findMany({
+      where: { clientId },
+      include: { contact: true },
+      orderBy: { occurredAt: "desc" },
+    }),
+    prisma.contact.findMany({ where: { clientId } }),
+  ]);
 
-  const groups = useMemo(() => {
-    const contactById = new Map(contacts.map((c) => [c.id, c]));
-    const activities = [...rawActivities]
-      .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-      .map((a) => ({ ...a, contact: a.contactId ? (contactById.get(a.contactId) ?? null) : null }));
-
-    const groups: { key: string; label: string; items: typeof activities }[] = [];
-    for (const a of activities) {
-      const key = format(a.occurredAt, "yyyy-MM-dd");
-      const group = groups.find((g) => g.key === key);
-      if (group) group.items.push(a);
-      else groups.push({ key, label: formatLongDate(a.occurredAt), items: [a] });
-    }
-    return groups;
-  }, [rawActivities, contacts]);
+  const groups: { key: string; label: string; items: typeof activities }[] = [];
+  for (const a of activities) {
+    const key = format(a.occurredAt, "yyyy-MM-dd");
+    const group = groups.find((g) => g.key === key);
+    if (group) group.items.push(a);
+    else groups.push({ key, label: formatLongDate(a.occurredAt), items: [a] });
+  }
 
   return (
     <div>

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Modal } from "./Modal";
-import { editFollowUp } from "@/app/actions/followups";
+import { editFollowUp } from "@/lib/localdb/repository";
 import { toDateInputValue } from "@/lib/format";
 
 export function EditFollowUpButton({

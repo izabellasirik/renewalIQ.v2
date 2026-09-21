@@ -1,26 +1,18 @@
-"use client";
-
-import { useMemo } from "react";
+import { prisma } from "@/lib/db";
 import { ClientDocumentsUpload } from "@/components/ClientDocumentsUpload";
 import { ClientDocumentRow } from "@/components/ClientDocumentRow";
-import { useFiles, useDocumentInsights } from "@/lib/localdb/hooks";
 
 // Needs Attention / Document Insights sections are temporarily disabled
 // (not removed) — see components/DocumentInsightCard.tsx and
 // components/NeedsAttentionPanel.tsx, still wired up and populated by the
 // upload pipeline, just not rendered here for now.
 
-export function DocumentsTab({ clientId }: { clientId: string }) {
-  const allFiles = useFiles(clientId);
-  const allInsights = useDocumentInsights();
-
-  const docs = useMemo(() => {
-    const insightByFile = new Map(allInsights.map((i) => [i.fileId, i]));
-    return allFiles
-      .filter((f) => f.purpose === "client_document")
-      .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime())
-      .map((f) => ({ ...f, insight: insightByFile.get(f.id) ?? null }));
-  }, [allFiles, allInsights]);
+export async function DocumentsTab({ clientId }: { clientId: string }) {
+  const docs = await prisma.file.findMany({
+    where: { clientId, purpose: "client_document" },
+    include: { insight: true },
+    orderBy: { uploadedAt: "desc" },
+  });
 
   return (
     <div className="space-y-6">

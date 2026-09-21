@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Modal } from "./Modal";
-import { addMarket } from "@/app/actions/markets";
+import { addMarket } from "@/lib/localdb/repository";
 import { MARKET_STATUSES } from "@/lib/constants";
 
 export function AddMarketButton({ clientId }: { clientId: string }) {

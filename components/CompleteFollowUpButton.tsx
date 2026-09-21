@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { completeFollowUp } from "@/app/actions/followups";
+import { completeFollowUp } from "@/lib/localdb/repository";
 
 export function CompleteFollowUpButton({
   id,

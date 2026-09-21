@@ -1,7 +1,5 @@
-"use client";
-
-import { useMemo } from "react";
 import Link from "next/link";
+import { prisma } from "@/lib/db";
 import { ClientDetailsCard } from "@/components/ClientDetailsCard";
 import { AddDocumentButton } from "@/components/AddDocumentButton";
 import { DocumentRow } from "@/components/DocumentRow";
@@ -9,36 +7,26 @@ import { DocumentsCompleteToggle } from "@/components/DocumentsCompleteToggle";
 import { EditFollowUpButton } from "@/components/EditFollowUpButton";
 import { ScheduleFollowUpButton } from "@/components/ScheduleFollowUpButton";
 import { formatShortDate, formatDateTime } from "@/lib/format";
-import { useClient, useContacts, useDocumentRequirements, useFiles, useFollowUps, useActivities } from "@/lib/localdb/hooks";
 
-export function OverviewTab({ clientId }: { clientId: string }) {
-  const client = useClient(clientId);
-  const allDocs = useDocumentRequirements(clientId);
-  const files = useFiles(clientId);
-  const followUps = useFollowUps(clientId);
-  const activities = useActivities(clientId);
-  const contacts = useContacts(clientId);
-
-  const missingDocs = useMemo(
-    () =>
-      allDocs
-        .filter((d) => d.status !== "Received")
-        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-        .map((d) => ({ ...d, files: files.filter((f) => f.documentRequirementId === d.id) })),
-    [allDocs, files]
-  );
-
-  const nextFollowUp = useMemo(
-    () => followUps.filter((f) => !f.completed).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())[0] ?? null,
-    [followUps]
-  );
-
-  const recentActivity = useMemo(
-    () => [...activities].sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime()).slice(0, 5),
-    [activities]
-  );
-
-  if (!client) return null;
+export async function OverviewTab({ clientId }: { clientId: string }) {
+  const [client, missingDocs, nextFollowUp, recentActivity, contacts] = await Promise.all([
+    prisma.client.findUniqueOrThrow({ where: { id: clientId } }),
+    prisma.documentRequirement.findMany({
+      where: { clientId, status: { not: "Received" } },
+      include: { files: true },
+      orderBy: { createdAt: "asc" },
+    }),
+    prisma.followUp.findFirst({
+      where: { clientId, completed: false },
+      orderBy: { dueDate: "asc" },
+    }),
+    prisma.activity.findMany({
+      where: { clientId },
+      orderBy: { occurredAt: "desc" },
+      take: 5,
+    }),
+    prisma.contact.findMany({ where: { clientId } }),
+  ]);
 
   return (
     <div className="space-y-6">

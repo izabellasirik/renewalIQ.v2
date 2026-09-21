@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Modal } from "./Modal";
-import { scheduleFollowUp } from "@/app/actions/followups";
+import { scheduleFollowUp } from "@/lib/localdb/repository";
 import { toDateInputValue } from "@/lib/format";
 import { addDays } from "date-fns";
 

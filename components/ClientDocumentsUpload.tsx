@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { uploadClientDocuments } from "@/app/actions/clientDocuments";
+import { uploadClientDocuments } from "@/lib/localdb/repository";
 
 export function ClientDocumentsUpload({ clientId }: { clientId: string }) {
   const [open, setOpen] = useState(false);

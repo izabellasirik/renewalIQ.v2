@@ -1,15 +1,14 @@
-"use client";
-
-import { Suspense } from "react";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/db";
 import { StatusBadge, clientStatusTone } from "@/components/StatusBadge";
 import { OverviewTab } from "./OverviewTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { MarketsTab } from "./MarketsTab";
 import { ActivityTab } from "./ActivityTab";
 import { NotesTab } from "./NotesTab";
-import { useClient, useHydrated } from "@/lib/localdb/hooks";
+
+export const dynamic = "force-dynamic";
 
 const TABS = [
   { key: "overview", label: "Overview" },
@@ -19,38 +18,20 @@ const TABS = [
   { key: "notes", label: "Notes" },
 ] as const;
 
-export default function ClientProfilePage() {
-  return (
-    <Suspense fallback={<div className="mx-auto max-w-4xl px-6 py-10 text-muted">Loading…</div>}>
-      <ClientProfilePageContent />
-    </Suspense>
-  );
-}
+export default async function ClientProfilePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string; new?: string }>;
+}) {
+  const { id } = await params;
+  const sp = await searchParams;
+  const tab = sp.tab ?? "overview";
+  const isNew = sp.new === "1";
 
-function ClientProfilePageContent() {
-  const params = useParams<{ id: string }>();
-  const searchParams = useSearchParams();
-  const id = params.id;
-  const tab = searchParams.get("tab") ?? "overview";
-  const isNew = searchParams.get("new") === "1";
-
-  const hydrated = useHydrated();
-  const client = useClient(id);
-
-  if (!hydrated) {
-    return <div className="mx-auto max-w-4xl px-6 py-10 text-muted">Loading local data…</div>;
-  }
-
-  if (!client) {
-    return (
-      <div className="mx-auto max-w-4xl px-6 py-10">
-        <p className="text-muted">Client not found in this browser&apos;s local test data.</p>
-        <Link href="/clients" className="mt-3 inline-block text-sm text-accent hover:underline">
-          ← All Clients
-        </Link>
-      </div>
-    );
-  }
+  const client = await prisma.client.findUnique({ where: { id } });
+  if (!client) notFound();
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-10">

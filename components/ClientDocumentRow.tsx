@@ -1,11 +1,11 @@
-import type { File as PrismaFile, DocumentInsight } from "@prisma/client";
+import type { LocalFile, LocalDocumentInsight } from "@/lib/localdb/types";
 import { StatusBadge } from "./StatusBadge";
 import { DeleteButton } from "./DeleteButton";
-import { deleteClientDocument } from "@/app/actions/clientDocuments";
+import { deleteClientDocument } from "@/lib/localdb/repository";
 import { formatShortDate } from "@/lib/format";
 import { DOCUMENT_ANALYSIS_CATEGORY_LABELS, type DocumentAnalysisCategory } from "@/lib/documentAnalysis";
 
-type Row = PrismaFile & { insight: DocumentInsight | null };
+type Row = LocalFile & { insight: LocalDocumentInsight | null };
 
 function fileIcon(filename: string): string {
   const ext = filename.split(".").pop()?.toLowerCase() ?? "";
@@ -38,9 +38,7 @@ export function ClientDocumentRow({ doc, clientId }: { doc: Row; clientId: strin
       </div>
       <div className="flex items-center gap-3">
         <StatusBadge label={statusLabel} tone={statusTone} />
-        <a href={`/api/files/${doc.id}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary text-xs">
-          View
-        </a>
+        <span className="text-xs italic text-muted">Not retained</span>
         <DeleteButton
           action={deleteClientDocument}
           hiddenFields={{ id: doc.id, clientId }}

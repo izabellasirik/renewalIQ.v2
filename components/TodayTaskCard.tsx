@@ -2,13 +2,13 @@ import Link from "next/link";
 import { isPast, isToday, startOfDay } from "date-fns";
 import { StatusBadge } from "./StatusBadge";
 import { CompleteFollowUpButton } from "./CompleteFollowUpButton";
-import { followUpContextLabel, type FollowUpWithContext } from "@/lib/followups";
+import { followUpContextLabel, type LocalFollowUpWithContext } from "@/lib/localdb/followups";
 
 export function TodayTaskCard({
   followUp,
   companyName,
 }: {
-  followUp: FollowUpWithContext;
+  followUp: LocalFollowUpWithContext;
   companyName: string;
 }) {
   const overdue = !isToday(followUp.dueDate) && isPast(startOfDay(followUp.dueDate));

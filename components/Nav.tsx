@@ -1,12 +1,21 @@
 import Link from "next/link";
+import { ClearTestDataButton } from "./ClearTestDataButton";
 
 export function Nav() {
   return (
     <header className="border-b border-border bg-surface">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <Link href="/clients" className="text-lg font-semibold tracking-tight text-foreground">
-          RenewalIQ
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/clients" className="text-lg font-semibold tracking-tight text-foreground">
+            RenewalIQ
+          </Link>
+          <span
+            className="badge badge-warn"
+            title="This build stores data only in this browser, for broker testing with synthetic data. It is not shared, not backed up, and not secure account storage."
+          >
+            Local Test Mode
+          </span>
+        </div>
         <nav className="flex items-center gap-6">
           <Link
             href="/clients"
@@ -20,6 +29,7 @@ export function Nav() {
           >
             Today&apos;s Plate
           </Link>
+          <ClearTestDataButton />
         </nav>
       </div>
     </header>

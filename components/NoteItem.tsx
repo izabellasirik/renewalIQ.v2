@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateNote, deleteNote } from "@/app/actions/notes";
+import { updateNote, deleteNote } from "@/lib/localdb/repository";
 import { formatDateTime } from "@/lib/format";
 
 export function NoteItem({

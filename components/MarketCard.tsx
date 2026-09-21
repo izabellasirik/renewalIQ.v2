@@ -1,15 +1,15 @@
-import type { File as PrismaFile, MarketSubmission } from "@prisma/client";
+import type { LocalFile, LocalMarketSubmission } from "@/lib/localdb/types";
 import { Disclosure } from "./Disclosure";
 import { StatusBadge, marketStatusTone } from "./StatusBadge";
 import { UploadFileForm } from "./UploadFileForm";
 import { DeleteButton } from "./DeleteButton";
 import { ScheduleFollowUpButton } from "./ScheduleFollowUpButton";
 import { SubmitButton } from "./SubmitButton";
-import { updateMarket, uploadQuoteFile, deleteMarket } from "@/app/actions/markets";
+import { updateMarket, uploadQuoteFile, deleteMarket } from "@/lib/localdb/repository";
 import { formatCurrency, formatShortDate, toDateInputValue } from "@/lib/format";
 import { MARKET_STATUSES } from "@/lib/constants";
 
-type MarketFull = MarketSubmission & { files: PrismaFile[] };
+type MarketFull = LocalMarketSubmission & { files: LocalFile[] };
 
 export function MarketCard({
   market,
@@ -150,9 +150,9 @@ export function MarketCard({
           label="Upload Quote Document"
         />
         {quoteFile && (
-          <a href={`/api/files/${quoteFile.id}`} target="_blank" className="text-xs text-accent hover:underline">
-            {quoteFile.filename}
-          </a>
+          <span className="text-xs text-muted">
+            {quoteFile.filename} <span className="italic">(not retained in this test build)</span>
+          </span>
         )}
       </div>
 

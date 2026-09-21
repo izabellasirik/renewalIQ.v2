@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Modal } from "./Modal";
-import { updateDocumentRequirement } from "@/app/actions/documents";
+import { updateDocumentRequirement } from "@/lib/localdb/repository";
 
 export function EditDocumentButton({
   doc,

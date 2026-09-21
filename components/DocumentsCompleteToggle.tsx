@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { setDocumentsComplete } from "@/app/actions/documents";
+import { setDocumentsComplete } from "@/lib/localdb/repository";
 
 export function DocumentsCompleteToggle({ clientId, complete }: { clientId: string; complete: boolean }) {
   const [pending, startTransition] = useTransition();

@@ -1,14 +1,13 @@
-"use client";
-
-import { useMemo } from "react";
-import { addNote } from "@/lib/localdb/repository";
+import { prisma } from "@/lib/db";
+import { addNote } from "@/app/actions/notes";
 import { SubmitButton } from "@/components/SubmitButton";
 import { NoteItem } from "@/components/NoteItem";
-import { useNotes } from "@/lib/localdb/hooks";
 
-export function NotesTab({ clientId }: { clientId: string }) {
-  const rawNotes = useNotes(clientId);
-  const notes = useMemo(() => [...rawNotes].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()), [rawNotes]);
+export async function NotesTab({ clientId }: { clientId: string }) {
+  const notes = await prisma.note.findMany({
+    where: { clientId },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="space-y-6">

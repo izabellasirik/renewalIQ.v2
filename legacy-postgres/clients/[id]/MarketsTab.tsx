@@ -1,30 +1,17 @@
-"use client";
-
-import { useMemo } from "react";
+import { prisma } from "@/lib/db";
 import { AddMarketButton } from "@/components/AddMarketButton";
 import { MarketCard } from "@/components/MarketCard";
 import { MARKET_STATUSES } from "@/lib/constants";
-import { useMarkets, useFiles, useFollowUps } from "@/lib/localdb/hooks";
 
-export function MarketsTab({ clientId }: { clientId: string }) {
-  const rawMarkets = useMarkets(clientId);
-  const files = useFiles(clientId);
-  const followUps = useFollowUps(clientId);
-
-  const markets = useMemo(
-    () =>
-      [...rawMarkets]
-        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-        .map((m) => ({
-          ...m,
-          files: files.filter((f) => f.marketSubmissionId === m.id),
-          nextFollowUpDate:
-            followUps
-              .filter((f) => f.marketSubmissionId === m.id && !f.completed)
-              .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())[0]?.dueDate ?? null,
-        })),
-    [rawMarkets, files, followUps]
-  );
+export async function MarketsTab({ clientId }: { clientId: string }) {
+  const markets = await prisma.marketSubmission.findMany({
+    where: { clientId },
+    include: {
+      files: true,
+      followUps: { where: { completed: false }, orderBy: { dueDate: "asc" }, take: 1 },
+    },
+    orderBy: { createdAt: "asc" },
+  });
 
   const counts = new Map<string, number>();
   for (const m of markets) counts.set(m.status, (counts.get(m.status) ?? 0) + 1);
@@ -57,7 +44,7 @@ export function MarketsTab({ clientId }: { clientId: string }) {
       ) : (
         <div className="space-y-3">
           {markets.map((m) => (
-            <MarketCard key={m.id} market={m} clientId={clientId} nextFollowUpDate={m.nextFollowUpDate} />
+            <MarketCard key={m.id} market={m} clientId={clientId} nextFollowUpDate={m.followUps[0]?.dueDate ?? null} />
           ))}
         </div>
       )}

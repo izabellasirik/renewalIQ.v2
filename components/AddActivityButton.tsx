@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Modal } from "./Modal";
-import { addActivity } from "@/app/actions/activities";
+import { addActivity } from "@/lib/localdb/repository";
 import { ACTIVITY_TYPES } from "@/lib/activity";
 
 export function AddActivityButton({
